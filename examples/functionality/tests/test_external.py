@@ -126,9 +126,16 @@ def test_callable_fail(dut):
     if test_count is not 5:
         raise TestFailure
 
-def test_ext_function(dut):
+def external_axi_read(dut,axi_master_inst):
+    x = axi_master_inst.read()
+    dut.log.info("external_axi_read got %s" % x)
+    return x
+
+def test_ext_function(dut,axi_master_inst):
     #dut.log.info("Sleeping")
-    return 2
+    x = external_axi_read(dut,axi_master_inst)
+    x += external_axi_read(dut,axi_master_inst)
+    return x
 
 @cocotb.function
 def yield_to_readwrite(dut):
@@ -153,12 +160,28 @@ def clock_monitor(dut):
         yield Timer(1000)
         count += 1
 
+class axi_master:
+    def __init__(self,dut):
+        self.dut = dut
+
+    @cocotb.coroutine
+    def read(self):
+        yield RisingEdge(self.dut.clk)
+        yield RisingEdge(self.dut.clk)
+        x = self.dut.stream_in_valid.value
+        raise ReturnValue(x)
+
+
 @cocotb.test(expect_fail=False)
 def test_ext_call_return(dut):
     """Test ability to yeild on an external non cocotb coroutine decorated function"""
+    axi_master_inst = axi_master(dut)
     mon = cocotb.scheduler.queue(clock_monitor(dut))
     clk_gen = cocotb.fork(Clock(dut.clk, 100).start())
-    value = yield external(test_ext_function)(dut)
+    dut.stream_in_valid <= 1
+    x = yield axi_master_inst.read()
+    dut.log.info("axi_master_inst.read() got %s" % x)
+    value = yield external(test_ext_function)(dut,axi_master_inst)
     dut.log.info("Value was %d" % value)
 
 @cocotb.test(expect_fail=False)
