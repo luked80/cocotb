@@ -307,7 +307,7 @@ gpi_sim_hdl gpi_get_handle_by_name(gpi_sim_hdl parent, const char *name)
     GpiObjHdl *base = sim_to_hdl<GpiObjHdl*>(parent);
     GpiObjHdl *hdl = __gpi_get_handle_by_name(base, s_name, NULL);
     if (!hdl) {
-        LOG_WARN("Failed to find a hdl named %s via any registered implementation",
+        LOG_DEBUG("Failed to find a hdl named %s via any registered implementation",
                  name);
     }
     return hdl;
@@ -372,7 +372,7 @@ gpi_sim_hdl gpi_next(gpi_iterator_hdl iterator)
                 if (next) {
                     return next;
                 }
-                LOG_WARN("Unable to create %s via any registered implementation", name.c_str());
+                LOG_DEBUG("Unable to create %s via any registered implementation", name.c_str());
                 continue;
             case GpiIterator::NOT_NATIVE_NO_NAME:
                 LOG_DEBUG("Found an object but not accesbile via %s, trying others", iter->m_impl->get_name_c());

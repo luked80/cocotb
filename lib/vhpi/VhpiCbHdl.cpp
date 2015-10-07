@@ -680,11 +680,11 @@ VhpiIterator::VhpiIterator(GpiImplInterface *impl, GpiObjHdl *hdl) : GpiIterator
 
     if (NULL == iterator) {
         std::string name = vhpi_get_str(vhpiCaseNameP, vhpi_hdl);
-        LOG_WARN("vhpi_iterate return NULL for all relationships on %s (%d) kind:%s name:%s",
-                 name.c_str(),
-                 vhpi_get(vhpiKindP, vhpi_hdl),
-                 vhpi_get_str(vhpiKindStrP, vhpi_hdl),
-                 vhpi_get_str(vhpiCaseNameP, vhpi_hdl));
+        LOG_DEBUG("vhpi_iterate return NULL for all relationships on %s (%d) kind:%s name:%s",
+		  name.c_str(),
+		  vhpi_get(vhpiKindP, vhpi_hdl),
+		  vhpi_get_str(vhpiKindStrP, vhpi_hdl),
+		  vhpi_get_str(vhpiCaseNameP, vhpi_hdl));
         m_iterator = NULL;
         return;
     }
@@ -765,7 +765,7 @@ GpiIterator::Status VhpiIterator::next_handle(std::string &name,
     const char *c_name = vhpi_get_str(vhpiCaseNameP, obj);
     if (!c_name) {
         int type = vhpi_get(vhpiKindP, obj);
-        LOG_WARN("Unable to get the name for this object of type %d", type);
+        LOG_DEBUG("Unable to get the name for this object of type %d", type);
 
         if (type < VHPI_TYPE_MIN) {
             *raw_hdl = (void*)obj;
