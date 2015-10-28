@@ -180,7 +180,7 @@ class HierarchyObject(SimHandleBase):
                 self._log.debug("Found index list length %d" % len(handle))
                 for subindex, subhdl in enumerate(handle):
                     if subhdl is None:
-                        self._log.warning("Index %d doesn't exist in %s.%s", subindex, self._name, name)
+                        self._log.debug("Index %d doesn't exist in %s.%s", subindex, self._name, name)
                         continue
                     self._log.debug("Yielding index %d from %s (%s)" % (subindex, name, type(subhdl)))
                     yield subhdl

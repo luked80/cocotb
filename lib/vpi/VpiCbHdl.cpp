@@ -473,7 +473,7 @@ VpiIterator::VpiIterator(GpiImplInterface *impl, GpiObjHdl *hdl) : GpiIterator(i
 
     int type = vpi_get(vpiType, vpi_hdl);
     if (NULL == (selected = iterate_over.get_options(type))) {
-        LOG_WARN("VPI: Implementation does not know how to iterate over %s(%d)",
+        LOG_DEBUG("VPI: Implementation does not know how to iterate over %s(%d)",
                   vpi_get_str(vpiType, vpi_hdl), type);
         return;
     }
@@ -492,7 +492,7 @@ VpiIterator::VpiIterator(GpiImplInterface *impl, GpiObjHdl *hdl) : GpiIterator(i
     }
 
     if (NULL == iterator) {
-        LOG_WARN("vpi_iterate returned NULL for all types");
+        LOG_DEBUG("vpi_iterate returned NULL for all types");
         selected = NULL;
         return;
     }

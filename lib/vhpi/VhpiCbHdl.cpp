@@ -744,8 +744,8 @@ VhpiIterator::VhpiIterator(GpiImplInterface *impl, GpiObjHdl *hdl) : GpiIterator
 
     vhpiClassKindT type = (vhpiClassKindT)vhpi_get(vhpiKindP, vhpi_hdl);
     if (NULL == (selected = iterate_over.get_options(type))) {
-        LOG_WARN("VHPI: Implementation does not know how to iterate over %s(%d)",
-                 vhpi_get_str(vhpiKindStrP, vhpi_hdl), type);
+        LOG_DEBUG("VHPI: Implementation does not know how to iterate over %s(%d)",
+		  vhpi_get_str(vhpiKindStrP, vhpi_hdl), type);
         return;
     }
 
@@ -763,11 +763,11 @@ VhpiIterator::VhpiIterator(GpiImplInterface *impl, GpiObjHdl *hdl) : GpiIterator
 
     if (NULL == iterator) {
         std::string name = vhpi_get_str(vhpiCaseNameP, vhpi_hdl);
-        LOG_WARN("vhpi_iterate return NULL for all relationships on %s (%d) kind:%s name:%s",
-                 name.c_str(),
-                 vhpi_get(vhpiKindP, vhpi_hdl),
-                 vhpi_get_str(vhpiKindStrP, vhpi_hdl),
-                 vhpi_get_str(vhpiCaseNameP, vhpi_hdl));
+        LOG_DEBUG("vhpi_iterate return NULL for all relationships on %s (%d) kind:%s name:%s",
+		  name.c_str(),
+		  vhpi_get(vhpiKindP, vhpi_hdl),
+		  vhpi_get_str(vhpiKindStrP, vhpi_hdl),
+		  vhpi_get_str(vhpiCaseNameP, vhpi_hdl));
         selected = NULL;
         return;
     }

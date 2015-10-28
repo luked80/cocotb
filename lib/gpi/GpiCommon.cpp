@@ -372,7 +372,7 @@ gpi_sim_hdl gpi_next(gpi_iterator_hdl iterator)
                 if (next) {
                     return next;
                 }
-                LOG_WARN("Unable to create %s via any registered implementation", name.c_str());
+                LOG_DEBUG("Unable to create %s via any registered implementation", name.c_str());
                 continue;
             case GpiIterator::NOT_NATIVE_NO_NAME:
                 LOG_DEBUG("Found an object but not accesbile via %s, trying others", iter->m_impl->get_name_c());

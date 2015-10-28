@@ -309,7 +309,7 @@ GpiObjHdl *VhpiImpl::create_gpi_obj_from_handle(vhpiHandleT new_hdl,
             break;
 
         default: {
-            LOG_ERROR("Not able to map type (%s) %u to object",
+            LOG_DEBUG("Not able to map type (%s) %u to object",
                       vhpi_get_str(vhpiKindStrP, query_hdl), type);
             new_obj = NULL;
             goto out;
