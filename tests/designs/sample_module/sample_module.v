@@ -29,6 +29,12 @@
 
 `timescale 1 ps / 1 ps
 
+typedef struct {
+  logic [31:0] hrdata;
+  logic        hready;
+  logic [1:0]  hresp;
+} ahb_lite_slave_t;
+
 module sample_module (
     input                                       clk,
 
@@ -37,6 +43,7 @@ module sample_module (
 `ifndef __ICARUS__
     input real                                  stream_in_real,
     input  integer                              stream_in_int,
+    input ahb_lite_slave_t                      ahb_lite_slave_struct_in,
 `endif
     input  [7:0]                                stream_in_data,
     input  [63:0]                               stream_in_data_wide,
@@ -73,6 +80,8 @@ always @(stream_in_int)
 `endif
 
 and test_and_gate(and_output, stream_in_ready, stream_in_valid);
+
+ahb_lite_slave_t ahb_lite_slave_struct;
 
 initial begin
      $dumpfile("waveform.vcd");
