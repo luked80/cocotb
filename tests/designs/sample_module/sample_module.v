@@ -60,6 +60,14 @@ module sample_module (
 
 );
 
+  initial begin
+    $display("Hello from a runaway sim.");
+    // Something that run forever
+    while(1) begin
+      #1;
+    end
+  end
+
 always @(posedge clk)
     stream_out_data_registered <= stream_in_data;
 
