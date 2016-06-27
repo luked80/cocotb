@@ -430,7 +430,11 @@ int VpiValueCbHdl::cleanup_callback(void)
 VpiStartupCbHdl::VpiStartupCbHdl(GpiImplInterface *impl) : GpiCbHdl(impl),
                                                            VpiCbHdl(impl)
 {
-    cb_data.reason = cbStartOfSimulation;
+    vpi_time.high = (uint32_t)(0);
+    vpi_time.low  = (uint32_t)(0);
+    vpi_time.type = vpiSimTime;
+
+    cb_data.reason = cbAfterDelay;
 }
 
 int VpiStartupCbHdl::run_callback(void) {
