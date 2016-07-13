@@ -334,6 +334,40 @@ def external(func):
 
     return wrapped
 
+import Tkinter
+import Queue
+
+class tcl_queue:
+    def __init__(self):
+        self.bridge = test_locker()
+        self.cmd_queue = Queue.Queue()
+
+    @coroutine
+    def start_thread(self):
+        self.cmd_thread = threading.Thread(target=self.process_commands)
+        self.cmd_thread.start()
+        # Wait for the thread to indicate it has started the tcl interpreter
+        yield self.bridge.out_event.wait()
+        # And then clear the event to reuse later
+        self.bridge.out_event.clear()
+        
+    def process_commands(self):
+        self.interp = Tkinter.Tcl()
+        unblock_external(self.bridge)
+        while True:
+            next_command = self.cmd_queue.get()
+            self.interp.eval(next_command)
+            unblock_external(self.bridge)
+            
+    @coroutine
+    def command(self,cmd_string):
+        self.cmd_queue.put(cmd_string)
+        # Wait for the interpreter thread to indicate is has run the command
+        yield self.bridge.out_event.wait()
+        # And then clear the event to reuse later
+        self.bridge.out_event.clear()
+
+    
 
 @public
 class test(coroutine):

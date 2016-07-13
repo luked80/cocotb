@@ -538,3 +538,17 @@ def test_binary_value(dut):
     dut._log.info("vec = 'b%s" % vec.binstr)
 
     yield Timer(100) #Make it do something with time
+
+@cocotb.test()
+def test_tcl(dut):
+    """
+    Create a tcl_Queue object and attempt to pass commands into it.
+    """
+    yield Timer(1)
+    dut.log.info("Creating the tcl_queue object")
+    my_tcl_queue = cocotb.tcl_queue()
+    dut.log.info("Starting up the thread that the tcl interpreter runs in.")
+    dut.log.info("And watches for commands on the queue.")
+    yield my_tcl_queue.start_thread()
+    yield my_tcl_queue.command("puts \"hi\"")
+    yield Timer(1)
