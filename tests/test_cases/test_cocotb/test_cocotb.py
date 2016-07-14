@@ -42,6 +42,8 @@ from cocotb.result import ReturnValue, TestFailure, TestError, TestSuccess
 
 from cocotb.binary import BinaryValue
 
+from cocotb.log import SimLog
+
 # Tests relating to providing meaningful errors if we forget to use the
 # yield keyword correctly to turn a function into a coroutine
 
@@ -539,16 +541,36 @@ def test_binary_value(dut):
 
     yield Timer(100) #Make it do something with time
 
+@cocotb.function
+def tcl_consume_time():
+    log = SimLog("tcl_consume_time")
+    log.setLevel(logging.INFO)
+    log.info("Calling Timer")
+    yield Timer(4500000000)
+    log.info("Called Timer")
+
+from cocotb.decorators import test_locker
+import Queue
+from cocotb.triggers import Event
+
 @cocotb.test()
 def test_tcl(dut):
     """
     Create a tcl_Queue object and attempt to pass commands into it.
     """
-    yield Timer(1)
     dut.log.info("Creating the tcl_queue object")
     my_tcl_queue = cocotb.tcl_queue()
     dut.log.info("Starting up the thread that the tcl interpreter runs in.")
     dut.log.info("And watches for commands on the queue.")
-    yield my_tcl_queue.start_thread()
-    yield my_tcl_queue.command("puts \"hi\"")
-    yield Timer(1)
+    cocotb.fork(my_tcl_queue.start_thread())
+    yield my_tcl_queue.command("puts \"Hello from tcl\"")
+    yield my_tcl_queue.command("puts \"Hello from tcl\"")
+    yield my_tcl_queue.command(["createcommand","consume_time_in_tcl", tcl_consume_time])
+    dut.log.info("Calling a tcl function that will consume time.")
+    yield my_tcl_queue.command("consume_time_in_tcl")
+    dut.log.info("Called a tcl function that consumes time.")
+    yield my_tcl_queue.command("consume_time_in_tcl")
+    dut.log.info("Called a tcl function that consumes time.")
+    yield my_tcl_queue.command("consume_time_in_tcl")
+    dut.log.info("Called a tcl function that consumes time.")
+

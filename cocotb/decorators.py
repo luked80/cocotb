@@ -290,7 +290,7 @@ def unblock_external(bridge):
     yield NullTrigger()
     bridge.set_out()
 
-
+    
 @public
 class test_locker(object):
     def __init__(self):
@@ -341,7 +341,7 @@ class tcl_queue:
     def __init__(self):
         self.bridge = test_locker()
         self.cmd_queue = Queue.Queue()
-
+        
     @coroutine
     def start_thread(self):
         self.cmd_thread = threading.Thread(target=self.process_commands)
@@ -350,17 +350,27 @@ class tcl_queue:
         yield self.bridge.out_event.wait()
         # And then clear the event to reuse later
         self.bridge.out_event.clear()
+        # We need to keep this coroutine alive and ticking over a Timer for some reason, otherwise we die
+        while True:
+            yield Timer(1e9)
         
     def process_commands(self):
         self.interp = Tkinter.Tcl()
         unblock_external(self.bridge)
         while True:
-            next_command = self.cmd_queue.get()
-            self.interp.eval(next_command)
+            next_command = self.cmd_queue.get()            
+            # Can only call into the tcl interp in this thread, hence this if/elif section
+            if type(next_command) == str:
+                result = self.interp.eval(next_command)
+            elif type(next_command) == list:
+                if next_command[0] == "createcommand":
+                    self.interp.createcommand(next_command[1],next_command[2])
             unblock_external(self.bridge)
             
     @coroutine
     def command(self,cmd_string):
+        # Seems like this coroutine needs to consume sometime, otherwise we die
+        yield Timer(0)
         self.cmd_queue.put(cmd_string)
         # Wait for the interpreter thread to indicate is has run the command
         yield self.bridge.out_event.wait()
