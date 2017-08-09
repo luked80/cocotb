@@ -445,7 +445,7 @@ const vhpiEnumT VhpiSignalObjHdl::chr2vhpi(const char value)
 }
 
 // Value related functions
-int VhpiLogicSignalObjHdl::set_signal_value(long value)
+int VhpiLogicSignalObjHdl::set_signal_value(long value, gpi_set_action_t action)
 {
     switch (m_value.format) {
         case vhpiEnumVal:
@@ -478,7 +478,7 @@ int VhpiLogicSignalObjHdl::set_signal_value(long value)
     return 0;
 }
 
-int VhpiLogicSignalObjHdl::set_signal_value(std::string &value)
+int VhpiLogicSignalObjHdl::set_signal_value(std::string &value, gpi_set_action_t action)
 {
     switch (m_value.format) {
         case vhpiEnumVal:
@@ -524,7 +524,7 @@ int VhpiLogicSignalObjHdl::set_signal_value(std::string &value)
 }
 
 // Value related functions
-int VhpiSignalObjHdl::set_signal_value(long value)
+int VhpiSignalObjHdl::set_signal_value(long value, gpi_set_action_t action)
 {
     switch (m_value.format) {
         case vhpiEnumVecVal:
@@ -570,7 +570,7 @@ int VhpiSignalObjHdl::set_signal_value(long value)
     return 0;
 }
 
-int VhpiSignalObjHdl::set_signal_value(double value)
+int VhpiSignalObjHdl::set_signal_value(double value, gpi_set_action_t action)
 {
     switch (m_value.format) {
         case vhpiRealVal:
@@ -595,7 +595,7 @@ int VhpiSignalObjHdl::set_signal_value(double value)
     return 0;
 }
 
-int VhpiSignalObjHdl::set_signal_value(std::string &value)
+int VhpiSignalObjHdl::set_signal_value(std::string &value, gpi_set_action_t action)
 {
     switch (m_value.format) {
         case vhpiEnumVal:

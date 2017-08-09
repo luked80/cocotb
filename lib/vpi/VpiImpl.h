@@ -205,9 +205,9 @@ public:
     double get_signal_value_real(void);
     long get_signal_value_long(void);
 
-    int set_signal_value(const long value);
-    int set_signal_value(const double value);
-    int set_signal_value(std::string &value);
+    int set_signal_value(const long value, const gpi_set_action_t action);
+    int set_signal_value(const double value, const gpi_set_action_t action);
+    int set_signal_value(std::string &value, const gpi_set_action_t action);
 
     /* Value change callback accessor */
     GpiCbHdl *value_change_cb(unsigned int edge);

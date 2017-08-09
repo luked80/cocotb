@@ -574,6 +574,17 @@ class NonConstantObject(NonHierarchyIndexableObject):
         except GeneratorExit:
             pass
 
+class SetAction:
+    def __init__(self,value=None):
+        self.value = value
+class Deposit(SetAction):
+    _action = 0
+class Force(SetAction):
+    _action = 1
+class Release(SetAction):
+    _action = 2
+class Freeze(SetAction):
+    _action = 3
 
 class ModifiableObject(NonConstantObject):
     """
@@ -597,10 +608,11 @@ class ModifiableObject(NonConstantObject):
 
         Assigning integers less than 32-bits is faster
         """
-        if isinstance(value, get_python_integer_types()) and value < 0x7fffffff and len(self) <= 32:
-            simulator.set_signal_val_long(self._handle, value)
-            return
+        value, set_action = self.check_for_set_action(value)
 
+        if isinstance(value, get_python_integer_types()) and value < 0x7fffffff and len(self) <= 32:
+            simulator.set_signal_val_long(self._handle, set_action, value)
+            return
         if isinstance(value, ctypes.Structure):
             value = BinaryValue(value=cocotb.utils.pack(value), bits=len(self))
         elif isinstance(value, get_python_integer_types()):
@@ -624,7 +636,19 @@ class ModifiableObject(NonConstantObject):
             self._log.critical("Unsupported type for value assignment: %s (%s)" % (type(value), repr(value)))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_str(self._handle, value.binstr)
+        simulator.set_signal_val_str(self._handle, set_action, value.binstr)
+
+    def check_for_set_action(self, value):
+        if isinstance(value,Freeze):
+            set_action = Force._action
+            value = self.value
+        elif isinstance(value,Release):
+            value = 0
+            set_action = Release._action
+        else:
+            set_action = value._action if isinstance(value,SetAction) else Deposit._action # Default to deposit
+            value = value.value if isinstance(value,SetAction) else value
+        return (value, set_action)
 
     def _getvalue(self):
         binstr = simulator.get_signal_val_binstr(self._handle)
@@ -666,11 +690,13 @@ class RealObject(ModifiableObject):
         This operation will fail unless the handle refers to a modifiable
         object eg net, signal or variable.
         """
+        value, set_action = self.check_for_set_action(value)
+
         if not isinstance(value, float):
             self._log.critical("Unsupported type for real value assignment: %s (%s)" % (type(value), repr(value)))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_real(self._handle, value)
+        simulator.set_signal_val_real(self._handle, set_action, value)
 
     def _getvalue(self):
         return simulator.get_signal_val_real(self._handle)
@@ -697,13 +723,15 @@ class EnumObject(ModifiableObject):
         This operation will fail unless the handle refers to a modifiable
         object eg net, signal or variable.
         """
+        value, set_action = self.check_for_set_action(value)
+
         if isinstance(value, BinaryValue):
             value = int(value)
         elif not isinstance(value, get_python_integer_types()):
             self._log.critical("Unsupported type for integer value assignment: %s (%s)" % (type(value), repr(value)))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_long(self._handle, value)
+        simulator.set_signal_val_long(self._handle, set_action, value)
 
     def _getvalue(self):
         return simulator.get_signal_val_long(self._handle)
@@ -728,13 +756,15 @@ class IntegerObject(ModifiableObject):
         This operation will fail unless the handle refers to a modifiable
         object eg net, signal or variable.
         """
+        value, set_action = self.check_for_set_action(value)
+
         if isinstance(value, BinaryValue):
             value = int(value)
         elif not isinstance(value, get_python_integer_types()):
             self._log.critical("Unsupported type for integer value assignment: %s (%s)" % (type(value), repr(value)))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_long(self._handle, value)
+        simulator.set_signal_val_long(self._handle, set_action, value)
 
     def _getvalue(self):
         return simulator.get_signal_val_long(self._handle)
@@ -758,11 +788,13 @@ class StringObject(ModifiableObject):
         This operation will fail unless the handle refers to a modifiable
         object eg net, signal or variable.
         """
+        value, set_action = self.check_for_set_action(value)
+
         if not isinstance(value, str):
             self._log.critical("Unsupported type for string value assignment: %s (%s)" % (type(value), repr(value)))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_str(self._handle, value)
+        simulator.set_signal_val_str(self._handle, set_action, value)
 
     def _getvalue(self):
         return simulator.get_signal_val_str(self._handle)

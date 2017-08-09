@@ -195,9 +195,9 @@ public:
     virtual long get_signal_value_long(void);
 
 
-    virtual int set_signal_value(const long value);
-    virtual int set_signal_value(const double value);
-    virtual int set_signal_value(std::string &value);
+    virtual int set_signal_value(const long value, const gpi_set_action_t action);
+    virtual int set_signal_value(const double value, const gpi_set_action_t action);
+    virtual int set_signal_value(std::string &value, const gpi_set_action_t action);
 
     /* Value change callback accessor */
     virtual GpiCbHdl *value_change_cb(unsigned int edge);
@@ -221,8 +221,8 @@ public:
 
     virtual ~VhpiLogicSignalObjHdl() { }
 
-    int set_signal_value(const long value);
-    int set_signal_value(std::string &value);
+    int set_signal_value(const long value, const gpi_set_action_t action);
+    int set_signal_value(std::string &value, const gpi_set_action_t action);
 
     int initialise(std::string &name, std::string &fq_name);
 };

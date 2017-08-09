@@ -324,9 +324,10 @@ long VpiSignalObjHdl::get_signal_value_long(void)
 }
 
 // Value related functions
-int VpiSignalObjHdl::set_signal_value(long value)
+int VpiSignalObjHdl::set_signal_value(long value, gpi_set_action_t action)
 {
     FENTER
+    PLI_INT32 vpi_put_flag;
     s_vpi_value value_s;
 
     value_s.value.integer = value;
@@ -338,17 +339,32 @@ int VpiSignalObjHdl::set_signal_value(long value)
     vpi_time_s.high = 0;
     vpi_time_s.low  = 0;
 
+    switch (action) {
+    case GPI_FORCE:
+      vpi_put_flag = vpiForceFlag;
+      break;
+    case GPI_RELEASE:
+      // Best to pass its current value to the sim when releasing
+      vpi_get_value(GpiObjHdl::get_handle<vpiHandle>(),&value_s);
+      vpi_put_flag = vpiReleaseFlag;
+      break;
+    default:
+      // Default deposit
+      vpi_put_flag = vpiInertialDelay;
+    }
+    
     // Use Inertial delay to schedule an event, thus behaving like a verilog testbench
-    vpi_put_value(GpiObjHdl::get_handle<vpiHandle>(), &value_s, &vpi_time_s, vpiInertialDelay);
+    vpi_put_value(GpiObjHdl::get_handle<vpiHandle>(), &value_s, &vpi_time_s, vpi_put_flag);
     check_vpi_error();
 
     FEXIT
     return 0;
 }
 
-int VpiSignalObjHdl::set_signal_value(double value)
+int VpiSignalObjHdl::set_signal_value(double value, gpi_set_action_t action)
 {
     FENTER
+    PLI_INT32 vpi_put_flag;
     s_vpi_value value_s;
 
     value_s.value.real = value;
@@ -360,16 +376,31 @@ int VpiSignalObjHdl::set_signal_value(double value)
     vpi_time_s.high = 0;
     vpi_time_s.low  = 0;
 
-    vpi_put_value(GpiObjHdl::get_handle<vpiHandle>(), &value_s, &vpi_time_s, vpiInertialDelay);
+    switch (action) {
+    case GPI_FORCE:
+      vpi_put_flag = vpiForceFlag;
+      break;
+    case GPI_RELEASE:
+      // Best to pass its current value to the sim when releasing
+      vpi_get_value(GpiObjHdl::get_handle<vpiHandle>(),&value_s);
+      vpi_put_flag = vpiReleaseFlag;
+      break;
+    default:
+      // Default deposit
+      vpi_put_flag = vpiInertialDelay;
+    }
+
+    vpi_put_value(GpiObjHdl::get_handle<vpiHandle>(), &value_s, &vpi_time_s, vpi_put_flag);
     check_vpi_error();
 
     FEXIT
     return 0;
 }
 
-int VpiSignalObjHdl::set_signal_value(std::string &value)
+int VpiSignalObjHdl::set_signal_value(std::string &value, gpi_set_action_t action)
 {
     FENTER
+    PLI_INT32 vpi_put_flag;
     s_vpi_value value_s;
 
     std::vector<char> writable(value.begin(), value.end());
@@ -377,8 +408,22 @@ int VpiSignalObjHdl::set_signal_value(std::string &value)
 
     value_s.value.str = &writable[0];
     value_s.format = vpiBinStrVal;
+    
+    switch (action) {
+    case GPI_FORCE:
+      vpi_put_flag = vpiForceFlag;
+      break;
+    case GPI_RELEASE:
+      // Best to pass its current value to the sim when releasing
+      vpi_get_value(GpiObjHdl::get_handle<vpiHandle>(),&value_s);
+      vpi_put_flag = vpiReleaseFlag;
+      break;
+    default:
+      // Default deposit for strings is no delay version
+      vpi_put_flag = vpiNoDelay;
+    }
 
-    vpi_put_value(GpiObjHdl::get_handle<vpiHandle>(), &value_s, NULL, vpiNoDelay);
+    vpi_put_value(GpiObjHdl::get_handle<vpiHandle>(), &value_s, NULL, vpi_put_flag);
     check_vpi_error();
 
     FEXIT

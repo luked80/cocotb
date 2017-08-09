@@ -669,17 +669,18 @@ static PyObject *set_signal_val_str(PyObject *self, PyObject *args)
 {
     gpi_sim_hdl hdl;
     const char *binstr;
+    gpi_set_action_t action;
     PyObject *res;
 
     PyGILState_STATE gstate;
     gstate = TAKE_GIL();
 
-    if (!PyArg_ParseTuple(args, "O&s", gpi_sim_hdl_converter, &hdl, &binstr)) {
+    if (!PyArg_ParseTuple(args, "O&s", gpi_sim_hdl_converter, &hdl, &action, &binstr)) {
         DROP_GIL(gstate);
         return NULL;
     }
 
-    gpi_set_signal_value_str(hdl,binstr);
+    gpi_set_signal_value_str(hdl,binstr,action);
     res = Py_BuildValue("s", "OK!");
 
     DROP_GIL(gstate);
@@ -691,17 +692,18 @@ static PyObject *set_signal_val_real(PyObject *self, PyObject *args)
 {
     gpi_sim_hdl hdl;
     double value;
+    gpi_set_action_t action;
     PyObject *res;
 
     PyGILState_STATE gstate;
     gstate = TAKE_GIL();
 
-    if (!PyArg_ParseTuple(args, "O&d", gpi_sim_hdl_converter, &hdl, &value)) {
+    if (!PyArg_ParseTuple(args, "O&d", gpi_sim_hdl_converter, &hdl, &action, &value)) {
         DROP_GIL(gstate);
         return NULL;
     }
 
-    gpi_set_signal_value_real(hdl, value);
+    gpi_set_signal_value_real(hdl, value, action);
     res = Py_BuildValue("s", "OK!");
 
     DROP_GIL(gstate);
@@ -713,17 +715,18 @@ static PyObject *set_signal_val_long(PyObject *self, PyObject *args)
 {
     gpi_sim_hdl hdl;
     long value;
+    gpi_set_action_t action;
     PyObject *res;
 
     PyGILState_STATE gstate;
     gstate = TAKE_GIL();
 
-    if (!PyArg_ParseTuple(args, "O&l", gpi_sim_hdl_converter, &hdl, &value)) {
+    if (!PyArg_ParseTuple(args, "O&l", gpi_sim_hdl_converter, &hdl, &action, &value)) {
         DROP_GIL(gstate);
         return NULL;
     }
 
-    gpi_set_signal_value_long(hdl, value);
+    gpi_set_signal_value_long(hdl, value, action);
     res = Py_BuildValue("s", "OK!");
 
     DROP_GIL(gstate);

@@ -253,9 +253,9 @@ public:
     virtual double get_signal_value_real(void);
     virtual long get_signal_value_long(void);
 
-    virtual int set_signal_value(const long value);
-    virtual int set_signal_value(const double value);
-    virtual int set_signal_value(std::string &value);
+    virtual int set_signal_value(const long value, const gpi_set_action_t action);
+    virtual int set_signal_value(const double value, const gpi_set_action_t action);
+    virtual int set_signal_value(std::string &value, const gpi_set_action_t action);
 
     virtual void *get_sub_hdl(int index);
 
@@ -291,7 +291,7 @@ public:
     const char* get_signal_value_str(void);
     long get_signal_value_long(void);
 
-    int set_signal_value(const long value);
+    int set_signal_value(const long value, const gpi_set_action_t action);
 
     int initialise(std::string &name, std::string &fq_name);
 
@@ -332,8 +332,8 @@ public:
 
     const char* get_signal_value_binstr(void);
 
-    int set_signal_value(const long value);
-    int set_signal_value(std::string &value);
+    int set_signal_value(const long value, const gpi_set_action_t action);
+    int set_signal_value(std::string &value, const gpi_set_action_t action);
 
     int initialise(std::string &name, std::string &fq_name);
 
@@ -389,7 +389,7 @@ public:
 
     double get_signal_value_real(void);
 
-    int set_signal_value(const double value);
+    int set_signal_value(const double value, const gpi_set_action_t action);
 
     int initialise(std::string &name, std::string &fq_name);
 
@@ -418,7 +418,7 @@ public:
 
     const char* get_signal_value_str(void);
 
-    int set_signal_value(std::string &value);
+    int set_signal_value(std::string &value, const gpi_set_action_t action);
 
     int initialise(std::string &name, std::string &fq_name);
 

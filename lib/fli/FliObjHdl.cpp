@@ -139,19 +139,19 @@ long FliValueObjHdl::get_signal_value_long(void)
     return -1;
 }
 
-int FliValueObjHdl::set_signal_value(const long value)
+int FliValueObjHdl::set_signal_value(const long value, const gpi_set_action_t action)
 {
     LOG_ERROR("Setting signal/variable value via long not supported for %s of type %d", m_fullname.c_str(), m_type);
     return -1;
 }
 
-int FliValueObjHdl::set_signal_value(std::string &value)
+int FliValueObjHdl::set_signal_value(std::string &value, const gpi_set_action_t action)
 {
     LOG_ERROR("Setting signal/variable value via string not supported for %s of type %d", m_fullname.c_str(), m_type);
     return -1;
 }
 
-int FliValueObjHdl::set_signal_value(const double value)
+int FliValueObjHdl::set_signal_value(const double value, const gpi_set_action_t action)
 {
     LOG_ERROR("Setting signal/variable value via double not supported for %s of type %d", m_fullname.c_str(), m_type);
     return -1;
@@ -210,7 +210,7 @@ long FliEnumObjHdl::get_signal_value_long(void)
     }
 }
 
-int FliEnumObjHdl::set_signal_value(const long value)
+int FliEnumObjHdl::set_signal_value(const long value, const gpi_set_action_t action)
 {
     if (value > m_num_enum || value < 0) {
         LOG_ERROR("Attempted to set a enum with range [0,%d] with invalid value %d!\n", m_num_enum, value);
@@ -302,7 +302,7 @@ const char* FliLogicObjHdl::get_signal_value_binstr(void)
     return m_val_buff;
 }
 
-int FliLogicObjHdl::set_signal_value(const long value)
+int FliLogicObjHdl::set_signal_value(const long value, const gpi_set_action_t action)
 {
     if (m_fli_type == MTI_TYPE_ENUM) {
         mtiInt32T enumVal = value ? m_enum_map['1'] : m_enum_map['0'];
@@ -330,7 +330,7 @@ int FliLogicObjHdl::set_signal_value(const long value)
     return 0;
 }
 
-int FliLogicObjHdl::set_signal_value(std::string &value)
+int FliLogicObjHdl::set_signal_value(std::string &value, const gpi_set_action_t action)
 {
     if (m_fli_type == MTI_TYPE_ENUM) {
         mtiInt32T enumVal = m_enum_map[value.c_str()[0]];
@@ -412,7 +412,7 @@ long FliIntObjHdl::get_signal_value_long(void)
     return (long)value;
 }
 
-int FliIntObjHdl::set_signal_value(const long value)
+int FliIntObjHdl::set_signal_value(const long value, const gpi_set_action_t action)
 {
     if (m_is_var) {
         mti_SetVarValue(get_handle<mtiVariableIdT>(), value);
@@ -450,7 +450,7 @@ double FliRealObjHdl::get_signal_value_real(void)
     return m_mti_buff[0];
 }
 
-int FliRealObjHdl::set_signal_value(const double value)
+int FliRealObjHdl::set_signal_value(const double value, const gpi_set_action_t action)
 {
     m_mti_buff[0] = value;
 
@@ -501,7 +501,7 @@ const char* FliStringObjHdl::get_signal_value_str(void)
     return m_val_buff;
 }
 
-int FliStringObjHdl::set_signal_value(std::string &value)
+int FliStringObjHdl::set_signal_value(std::string &value, const gpi_set_action_t action)
 {
     strncpy(m_mti_buff, value.c_str(), m_num_elems);
 
