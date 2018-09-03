@@ -84,12 +84,12 @@ test_if struct_var;
 
 and test_and_gate(and_output, stream_in_ready, stream_in_valid);
 
+clk_edge_counter sub_module_inst (clk);
+
 initial begin
      $dumpfile("waveform.vcd");
      $dumpvars(0,sample_module);
 
-//   TODO: Move into a separate test
-//     #500000 $fail_test("Test timed out, failing...");
 end
 
 reg[3:0] temp;
@@ -104,4 +104,29 @@ end
 endgenerate
 
 endmodule
+
+
+module clk_edge_counter
+  (input clk);
+
+  reg [31:0] count;
+
+  initial begin
+    count = 0;
+  end
+
+  always@(posedge clk) begin
+    count <= count + 1;
+  end
+
+  memory_model memory();
+
+endmodule // clk_edge_counter
+
+module memory_model();
+
+  reg [31:0] array [0:100];
+
+endmodule // memory_model
+
 
